@@ -50,6 +50,9 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database-ktx")
 
+    implementation("com.naver.maps:map-sdk:3.17.0")
+    implementation("com.google.android.gms:play-services-location:20.0.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
