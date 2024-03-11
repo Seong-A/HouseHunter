@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1088075054255",
+    "project_id": "househunter-cc959",
+    "storage_bucket": "househunter-cc959.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088075054255:android:e914ed71a5bf83c972685a",
+        "android_client_info": {
+          "package_name": "com.example.househunter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU1LiamEhv8ffIpmJ8iU7eCvdZXmBy4Zo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
