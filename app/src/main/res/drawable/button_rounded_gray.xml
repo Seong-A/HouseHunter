@@ -1,0 +1,5 @@
+<!-- res/drawable/button_rounded_corner.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/gray" />
+    <corners android:radius="10dp" /> <!-- 조절 가능한 모서리 반지름 값 -->
+</shape>

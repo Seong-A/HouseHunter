@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#EA3945" android:state_checked="true" /> <!-- 선택된 item 배경색 -->
+    <item android:color="#C5C5C5" /> <!-- 선택되지 않은 item 배경색 -->
+</selector>

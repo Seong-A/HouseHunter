@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:enabled="true"
+        android:icon="@drawable/home"
+        android:title="홈" />
+    <item
+        android:id="@+id/like"
+        android:enabled="true"
+        android:icon="@drawable/like"
+        android:title="관심목록" />
+    <item
+        android:id="@+id/map"
+        android:enabled="true"
+        android:icon="@drawable/map"
+        android:title="지도" />
+    <item
+        android:id="@+id/mypage"
+        android:enabled="true"
+        android:icon="@drawable/mypage"
+        android:title="마이페이지" />
+</menu>
