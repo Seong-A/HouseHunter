@@ -88,7 +88,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:background="@drawable/signup_btn"
+            android:background="@drawable/btn_red_rounded"
             android:text="로그인"
             android:textColor="@color/white"
             android:textSize="20dp"
@@ -104,7 +104,7 @@
             android:text="회원가입"
             android:textColor="@color/white"
             android:layout_marginStart="5dp"
-            android:background="@drawable/signup_btn"/>
+            android:background="@drawable/btn_red_rounded"/>
 
 
     </LinearLayout>
@@ -121,7 +121,7 @@
             android:layout_width="305dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:background="@drawable/signup_btn"
+            android:background="@drawable/btn_red_rounded"
             android:text="구글로 로그인"
             android:textColor="@color/white"
             android:textSize="20dp"

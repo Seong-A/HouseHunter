@@ -177,7 +177,7 @@
                 android:layout_gravity="center"
                 android:text="가입하기"
                 android:textColor="@color/white"
-                android:background="@drawable/signup_btn"/>
+                android:background="@drawable/btn_red_rounded"/>
 
         </LinearLayout>
     </ScrollView>
