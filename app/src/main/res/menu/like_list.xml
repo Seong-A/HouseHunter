@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/recently"
+        android:enabled="true"
+        android:title="최근 본 집" />
+    <item
+        android:id="@+id/like"
+        android:enabled="true"
+        android:title="찜한 집" />
+    <item
+        android:id="@+id/bookmark"
+        android:enabled="true"
+        android:title="즐겨찾기" />
+</menu>
