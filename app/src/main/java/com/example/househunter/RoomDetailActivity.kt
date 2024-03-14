@@ -1,6 +1,8 @@
 package com.example.househunter
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
@@ -20,6 +22,11 @@ class RoomDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_roomdetail)
+
+        findViewById<View>(R.id.logo).setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
 
         val databaseReference: DatabaseReference =
             FirebaseDatabase.getInstance().reference.child("rooms").child("room1")

@@ -32,6 +32,14 @@
             android:name=".SignUpActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".LikeActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".MypageActivity"
+            android:exported="true">
+        </activity>
 
     </application>
 

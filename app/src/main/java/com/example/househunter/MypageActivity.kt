@@ -3,21 +3,13 @@ package com.example.househunter
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 
-
-class MainActivity : AppCompatActivity() {
+class MypageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-
-        val database = Firebase.database
-        val myRef = database.getReference("message")
+        setContentView(R.layout.activity_mypage)
 
         findViewById<View>(R.id.logo).setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -29,6 +21,8 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.home -> {
+                    val homeintent = Intent(this, MainActivity::class.java)
+                    startActivity(homeintent)
                     true
                 }
                 R.id.like -> {
@@ -42,13 +36,11 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.mypage -> {
-                    val mypageintent = Intent(this, MypageActivity::class.java)
-                    startActivity(mypageintent)
                     true
                 }
                 else -> false
             }
         }
-        bottomNavigationView.selectedItemId = R.id.home
+        bottomNavigationView.selectedItemId = R.id.mypage
     }
 }

@@ -1,8 +1,10 @@
 package com.example.househunter
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -19,6 +21,11 @@ class SignUpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
+
+        findViewById<View>(R.id.Signuplogo).setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
 
         // FirebaseAuth 및 FirebaseDatabase 인스턴스 초기화
         auth = FirebaseAuth.getInstance()

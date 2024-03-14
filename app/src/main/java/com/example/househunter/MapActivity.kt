@@ -36,6 +36,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
+        findViewById<View>(R.id.logo).setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
         val roomTypes = arrayOf("원룸", "투ㆍ쓰리룸", "오피스텔", "아파트")
 
         val roomTypeContainer = findViewById<LinearLayout>(R.id.room_type_container)
@@ -230,12 +235,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     true
                 }
                 R.id.like -> {
+                    val likeintent = Intent(this, LikeActivity::class.java)
+                    startActivity(likeintent)
                     true
                 }
                 R.id.map -> {
                     true
                 }
                 R.id.mypage -> {
+                    val mypageintent = Intent(this, MypageActivity::class.java)
+                    startActivity(mypageintent)
                     true
                 }
                 else -> false
