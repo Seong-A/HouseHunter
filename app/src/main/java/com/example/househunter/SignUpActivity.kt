@@ -22,11 +22,6 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        findViewById<View>(R.id.Signuplogo).setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-
         // FirebaseAuth 및 FirebaseDatabase 인스턴스 초기화
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
