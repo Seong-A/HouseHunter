@@ -1,5 +1,6 @@
 package com.example.househunter
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -7,7 +8,11 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.househunter.R
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -16,6 +21,11 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private val database = FirebaseDatabase.getInstance()
+    private val roomsRef = database.getReference("rooms")
+
+    private lateinit var naverMap: NaverMap
 
     private val selectedRoomTypes = mutableSetOf<String>()
     private var selectedFixMoney = 0
@@ -210,6 +220,28 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             btnApply.visibility = View.GONE
         }
 
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.home -> {
+                    val homeintent = Intent(this, MainActivity::class.java)
+                    startActivity(homeintent)
+                    true
+                }
+                R.id.like -> {
+                    true
+                }
+                R.id.map -> {
+                    true
+                }
+                R.id.mypage -> {
+                    true
+                }
+                else -> false
+            }
+        }
+        bottomNavigationView.selectedItemId = R.id.map
 
         // 네이버 지도 클라이언트 ID 가져오기
         val naverClientId = getString(R.string.NAVER_CLIENT_ID)
@@ -223,19 +255,43 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     .add(R.id.map_fragment, it)
                     .commit()
             }
-
         mapFragment.getMapAsync(this)
+
     }
 
-    override fun onMapReady(naverMap: NaverMap) {
-        // 지도에 첫 번째 마커 표시
-        val marker = Marker()
-        marker.position = LatLng(37.5670135, 126.9783740) // 여기에서 position 설정
-        marker.map = naverMap
+    override fun onMapReady(map: NaverMap) {
+        naverMap = map
 
-        // 지도에 두 번째 마커 표시
-        val marker2 = Marker()
-        marker2.position = LatLng(37.563119, 126.969418) // 여기에서 position 설정
-        marker2.map = naverMap
+        roomsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (roomSnapshot in dataSnapshot.children) {
+                    val room = roomSnapshot.getValue(Room::class.java)
+                    room?.let { addRoomMarker(it) }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
     }
+
+    private fun addRoomMarker(room: Room) {
+        val isRoomDisplayed = isRoomMatchFilter(room)
+        if (isRoomDisplayed) {
+            val marker = Marker()
+            marker.position = LatLng(room.latitude ?: 0.0, room.longitude ?: 0.0)
+            marker.map = naverMap
+        }
+    }
+
+    private fun isRoomMatchFilter(room: Room): Boolean {
+        val isRoomTypeMatch = selectedRoomTypes.isEmpty() || selectedRoomTypes.contains(room.rtype)
+        val isFixMoneyMatch = selectedFixMoney <= 0 || room.fix_money ?: 0 <= selectedFixMoney
+        val isMonthlyMoneyMatch = selectedMonthlyMoney <= 0 || room.monthly_money ?: 0 <= selectedMonthlyMoney
+        val isManagementMoneyMatch = selectedManagementMoney <= 0 || room.management_money ?: 0 <= selectedManagementMoney
+        return isRoomTypeMatch && isFixMoneyMatch && isMonthlyMoneyMatch && isManagementMoneyMatch
+    }
+
 }
+
