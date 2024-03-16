@@ -42,7 +42,6 @@
                 android:layout_marginTop="10dp"
                 android:paddingTop="10dp"
                 android:paddingLeft="20dp"
-                android:text="월세 1000/50"
                 android:textSize="23dp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/viewPager"
@@ -65,7 +64,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="15dp"
                 android:paddingTop="15dp"
-                android:text="투룸"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/textViewTitle"
                 app:layout_constraintStart_toEndOf="@id/imageView" />
@@ -87,7 +85,6 @@
                 android:layout_marginStart="4dp"
                 android:paddingLeft="15dp"
                 android:paddingTop="15dp"
-                android:text="36.5m"
                 android:textSize="18sp"
                 app:layout_constraintStart_toEndOf="@id/imageView2"
                 app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
@@ -108,7 +105,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="15dp"
                 android:paddingTop="15dp"
-                android:text="5층"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/roomtype"
                 app:layout_constraintStart_toEndOf="@id/imageView3" />
@@ -130,7 +126,6 @@
                 android:layout_marginStart="4dp"
                 android:paddingLeft="15dp"
                 android:paddingTop="15dp"
-                android:text="5만원"
                 android:textSize="18sp"
                 app:layout_constraintStart_toEndOf="@id/imageView4"
                 app:layout_constraintTop_toBottomOf="@id/size" />
@@ -177,7 +172,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="50"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/priceinfo"
                 app:layout_constraintStart_toEndOf="@id/monthly_m" />
@@ -200,7 +194,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="5"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/monthly_money"
                 app:layout_constraintStart_toEndOf="@id/management_m" />
@@ -223,7 +216,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="가능"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/management_money2"
                 app:layout_constraintStart_toEndOf="@id/park_a" />
@@ -268,7 +260,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="오피스텔"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/detail_info"
                 app:layout_constraintStart_toEndOf="@id/detail_text1" />
@@ -291,7 +282,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="5층/9층"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/rtype"
                 app:layout_constraintStart_toEndOf="@id/detail_text2" />
@@ -314,7 +304,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="1개/1개"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/floor2"
                 app:layout_constraintStart_toEndOf="@id/detail_text3" />
@@ -337,7 +326,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="있음"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/room_bath"
                 app:layout_constraintStart_toEndOf="@id/detail_text4" />
@@ -360,7 +348,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="340세대"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/elevator"
                 app:layout_constraintStart_toEndOf="@id/detail_text5" />
@@ -383,7 +370,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="103세대"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/total_room"
                 app:layout_constraintStart_toEndOf="@id/detail_text6" />
@@ -406,7 +392,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="즉시 입주"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/total_parking"
                 app:layout_constraintStart_toEndOf="@id/detail_text7" />
@@ -440,7 +425,6 @@
                 android:layout_height="50dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="15dp"
-                android:text="서울시 강남구 논현동"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/location_text"
@@ -464,7 +448,6 @@
                 android:layout_marginTop="28dp"
                 android:background="@drawable/btn_background"
                 android:gravity="center"
-                android:text="010-1234-1234"
                 android:textSize="23dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"

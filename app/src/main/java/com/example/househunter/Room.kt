@@ -1,7 +1,7 @@
 package com.example.househunter
 
 data class Room(
-    val id: Long? = 0,
+    val roomID: String? = null,
     val date: String? = "",
     val elevator: String? = "",
     val fix_money: Long? = 0,
@@ -20,7 +20,7 @@ data class Room(
     val size: String? = "",
     val total_parking: String? = "",
     val total_room: String? = ""
-)
- {
-    constructor() : this(null)
+) {
+
 }
+

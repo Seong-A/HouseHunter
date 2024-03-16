@@ -1,5 +1,4 @@
 package com.example.househunter
-
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -12,6 +11,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.MapFragment
@@ -23,9 +23,10 @@ import com.naver.maps.map.overlay.Marker
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val database = FirebaseDatabase.getInstance()
-    private val roomsRef = database.getReference("rooms")
+    private lateinit var roomsQuery: Query
 
     private lateinit var naverMap: NaverMap
+    private val markerRoomMap = mutableMapOf<Marker, String>()
 
     private val selectedRoomTypes = mutableSetOf<String>()
     private var selectedFixMoney = 0
@@ -35,6 +36,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+
+        roomsQuery = database.getReference("rooms")
 
         findViewById<View>(R.id.logo).setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -74,6 +77,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 btnCancel.visibility = View.VISIBLE
                 btnApply.visibility = View.VISIBLE
             }
+
         }
 
         tvFixMoney.setOnClickListener {
@@ -271,36 +275,123 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(map: NaverMap) {
         naverMap = map
 
-        roomsRef.addValueEventListener(object : ValueEventListener {
+        // 초기에는 모든 방을 표시
+        roomsQuery.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (roomSnapshot in dataSnapshot.children) {
-                    val room = roomSnapshot.getValue(Room::class.java)
-                    room?.let { addRoomMarker(it) }
+                displayRooms(dataSnapshot)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // 에러 처리
+            }
+        })
+
+        naverMap.setOnMapClickListener { point, _ ->
+            true
+        }
+    }
+
+    // 방을 표시하는 함수
+    private fun displayRooms(dataSnapshot: DataSnapshot) {
+        naverMap.clear() // 기존 마커 삭제
+
+        for (roomSnapshot in dataSnapshot.children) {
+            val room = roomSnapshot.getValue(Room::class.java)
+            room?.let {
+                val updatedRoom = it.copy(roomID = roomSnapshot.key)
+                if (isRoomMatchFilter(updatedRoom)) {
+                    addRoomMarker(updatedRoom)
+                }
+            }
+        }
+    }
+
+    // 필터 적용 후 방을 다시 표시하는 함수
+    private fun updateDisplayedRooms() {
+        // 필터 적용을 위한 Firebase 쿼리
+        var query = roomsQuery
+
+        // 보증금 필터
+        if (selectedFixMoney > 0) {
+            query = query.orderByChild("fix_money").startAt(selectedFixMoney.toDouble())
+        }
+        // 방 종류 필터
+        if (selectedRoomTypes.isNotEmpty()) {
+            query = query.orderByChild("rtype").startAt(selectedRoomTypes.first())
+        }
+        // 월세 필터
+        if (selectedMonthlyMoney > 0) {
+            query = query.orderByChild("monthly_money").startAt(selectedMonthlyMoney.toDouble())
+        }
+        // 관리비 필터
+        if (selectedManagementMoney > 0) {
+            query = query.orderByChild("management_money").startAt(selectedManagementMoney.toDouble())
+        }
+
+        // 쿼리 실행
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // 결과가 있는 경우에만 마커 추가
+                if (dataSnapshot.exists()) {
+                    naverMap.clear() // 기존 마커 삭제
+                    displayRooms(dataSnapshot) // 필터 적용 후 방 다시 표시
+                } else {
+                    // 결과가 없는 경우에 대한 처리
+                    // 사용자에게 알림 또는 다른 처리 수행
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-
+                // 에러 처리
             }
         })
     }
 
+    // 방을 추가하는 함수
     private fun addRoomMarker(room: Room) {
-        val isRoomDisplayed = isRoomMatchFilter(room)
-        if (isRoomDisplayed) {
-            val marker = Marker()
-            marker.position = LatLng(room.latitude ?: 0.0, room.longitude ?: 0.0)
-            marker.map = naverMap
+        val marker = Marker()
+        marker.position = LatLng(room.latitude ?: 0.0, room.longitude ?: 0.0)
+        marker.map = naverMap
+        marker.setOnClickListener {
+            val intent = Intent(this@MapActivity, RoomDetailActivity::class.java)
+            intent.putExtra("roomID", room.roomID)
+            startActivity(intent)
+            true // 클릭 이벤트 소비
         }
+    }
+
+
+    // 필터가 변경될 때 호출되는 함수
+    private fun onFilterChanged() {
+        updateDisplayedRooms() // 필터 적용 후 방 다시 표시
+    }
+
+    private fun clearMarkers() {
+        markers.forEach { it.map = null }
+        markers.clear()
+    }
+
+    // 필터 적용 함수에서 필터가 변경되었을 때 호출
+    private fun applyFilter() {
+        clearMarkers()
+        onFilterChanged()
     }
 
     private fun isRoomMatchFilter(room: Room): Boolean {
         val isRoomTypeMatch = selectedRoomTypes.isEmpty() || selectedRoomTypes.contains(room.rtype)
-        val isFixMoneyMatch = selectedFixMoney <= 0 || room.fix_money ?: 0 <= selectedFixMoney
+        val isFixMoneyMatch = selectedFixMoney <= 0 || (room.fix_money ?: 0) <= selectedFixMoney
         val isMonthlyMoneyMatch = selectedMonthlyMoney <= 0 || room.monthly_money ?: 0 <= selectedMonthlyMoney
         val isManagementMoneyMatch = selectedManagementMoney <= 0 || room.management_money ?: 0 <= selectedManagementMoney
+
         return isRoomTypeMatch && isFixMoneyMatch && isMonthlyMoneyMatch && isManagementMoneyMatch
     }
 
+}
+
+
+private val markers = mutableListOf<Marker>()
+private fun NaverMap.clear() {
+    markers.forEach { it.map = null }
+    markers.clear()
 }
 
