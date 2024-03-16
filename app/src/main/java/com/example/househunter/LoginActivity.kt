@@ -1,5 +1,6 @@
 package com.example.househunter
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
@@ -11,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.househunter.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.NaverIdLoginSDK.oauthLoginCallback
 import com.navercorp.nid.oauth.NidOAuthLogin
@@ -22,6 +25,10 @@ class LoginActivity : AppCompatActivity(){
 
     private lateinit var auth : FirebaseAuth
     private lateinit var binding: ActivityLoginBinding
+
+    private var email: String = ""
+    private var phone: String = ""
+    private var name: String = ""
 
     override fun onCreate(savedInstanceState:Bundle?){
         super.onCreate(savedInstanceState)
@@ -84,6 +91,11 @@ class LoginActivity : AppCompatActivity(){
         val profileCallback = object : NidProfileCallback<NidProfileResponse> {
             override fun onSuccess(response: NidProfileResponse) {
                 val userId = response.profile?.id
+                val userEmail = response.profile?.email
+                val userName = response.profile?.name
+                val userPhone = response.profile?.mobile
+                // 사용자 정보를 파이어베이스에 저장
+                saveUserToFirebase(userId, userEmail, userName)
                 Toast.makeText(this@LoginActivity, "네이버 아이디 로그인 성공!", Toast.LENGTH_SHORT).show()
             }
             override fun onFailure(httpStatus: Int, message: String) {
@@ -123,6 +135,23 @@ class LoginActivity : AppCompatActivity(){
         }
 
         NaverIdLoginSDK.authenticate(this, oauthLoginCallback)
+    }
+
+    private fun saveUserToFirebase(uid: String?, email: String?, name: String?) {
+        uid?.let { uid ->
+            val userMap = HashMap<String, Any>()
+            userMap["email"] = email ?: ""
+            userMap["name"] = name ?: ""
+
+            val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+            database.child("users").child(uid).setValue(userMap)
+                .addOnSuccessListener {
+                    Log.d("LoginActivity", "User data saved to Firebase")
+                }
+                .addOnFailureListener { e ->
+                    Log.w("LoginActivity", "Error saving user data to Firebase", e)
+                }
+        }
     }
 
 }

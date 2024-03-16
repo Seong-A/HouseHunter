@@ -68,6 +68,8 @@ class SignUpActivity : AppCompatActivity() {
                         // Firebase 실시간 데이터베이스에 회원 정보 저장
                         saveUserInfoToDatabase(user?.uid, email, name, phoneNumber)
                         Toast.makeText(this@SignUpActivity, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this@SignUpActivity, LoginActivity::class.java))
+                        finish()
                     } else {
                         // 회원가입 실패
                         if (task.exception is FirebaseAuthUserCollisionException) {
