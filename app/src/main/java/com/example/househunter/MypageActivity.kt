@@ -34,6 +34,11 @@ class MypageActivity : AppCompatActivity() {
         val userTextView = findViewById<TextView>(R.id.user_name)
         updateUserDisplayName(userTextView)
 
+        findViewById<View>(R.id.user_modify).setOnClickListener {
+            val intent = Intent(this, UpdateUserInfoActivity::class.java)
+            startActivity(intent)
+        }
+
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
 
         bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->

@@ -35,6 +35,10 @@
             android:name=".MypageActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".UpdateUserInfoActivity"
+            android:exported="true">
+        </activity>
 
         <activity
             android:name=".LoginActivity"
