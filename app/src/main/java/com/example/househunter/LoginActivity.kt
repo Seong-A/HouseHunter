@@ -8,17 +8,25 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.househunter.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.navercorp.nid.NaverIdLoginSDK
+import com.navercorp.nid.NaverIdLoginSDK.oauthLoginCallback
+import com.navercorp.nid.oauth.NidOAuthLogin
+import com.navercorp.nid.oauth.OAuthLoginCallback
+import com.navercorp.nid.profile.NidProfileCallback
+import com.navercorp.nid.profile.data.NidProfileResponse
 
 class LoginActivity : AppCompatActivity(){
 
     private lateinit var auth : FirebaseAuth
+    private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState:Bundle?){
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
-
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
 
         val etEmail = findViewById<EditText>(R.id.Email_Edit)
@@ -26,11 +34,20 @@ class LoginActivity : AppCompatActivity(){
         val btnLogin = findViewById<Button>(R.id.LoginpBtn)
         val btnSignUp = findViewById<Button>(R.id.SignupBtn)
 
+        val naverClientId = getString(R.string.naver_client_id)
+        val naverClientSecret = getString(R.string.naver_client_secret)
+        val naverClientName = getString(R.string.naver_client_name)
+        NaverIdLoginSDK.initialize(this, naverClientId, naverClientSecret , naverClientName)
+
+        binding.buttonOAuthLoginImg.setOnClickListener {
+            startNaverLogin()
+        }
 
         // 회원가입 버튼 클릭
         btnSignUp.setOnClickListener{
             startActivity(Intent(this@LoginActivity, SignUpActivity::class.java))
         }
+
 
         //로그인 버튼
         btnLogin.setOnClickListener{
@@ -60,6 +77,52 @@ class LoginActivity : AppCompatActivity(){
                     }
                 }
         }
-
     }
+    private fun startNaverLogin(){
+        var naverToken :String? = ""
+
+        val profileCallback = object : NidProfileCallback<NidProfileResponse> {
+            override fun onSuccess(response: NidProfileResponse) {
+                val userId = response.profile?.id
+                Toast.makeText(this@LoginActivity, "네이버 아이디 로그인 성공!", Toast.LENGTH_SHORT).show()
+            }
+            override fun onFailure(httpStatus: Int, message: String) {
+                val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+                val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
+                Toast.makeText(this@LoginActivity, "errorCode: ${errorCode}\n" +
+                        "errorDescription: ${errorDescription}", Toast.LENGTH_SHORT).show()
+            }
+            override fun onError(errorCode: Int, message: String) {
+                onFailure(errorCode, message)
+            }
+        }
+
+        val oauthLoginCallback = object : OAuthLoginCallback {
+            override fun onSuccess() {
+                // 네이버 로그인 인증이 성공했을 때 수행할 코드 추가
+                naverToken = NaverIdLoginSDK.getAccessToken()
+//                var naverRefreshToken = NaverIdLoginSDK.getRefreshToken()
+//                var naverExpiresAt = NaverIdLoginSDK.getExpiresAt().toString()
+//                var naverTokenType = NaverIdLoginSDK.getTokenType()
+//                var naverState = NaverIdLoginSDK.getState().toString()
+
+                //로그인 유저 정보 가져오기
+                NidOAuthLogin().callProfileApi(profileCallback)
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                finish()
+            }
+            override fun onFailure(httpStatus: Int, message: String) {
+                val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+                val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
+                Toast.makeText(this@LoginActivity, "errorCode: ${errorCode}\n" +
+                        "errorDescription: ${errorDescription}", Toast.LENGTH_SHORT).show()
+            }
+            override fun onError(errorCode: Int, message: String) {
+                onFailure(errorCode, message)
+            }
+        }
+
+        NaverIdLoginSDK.authenticate(this, oauthLoginCallback)
+    }
+
 }

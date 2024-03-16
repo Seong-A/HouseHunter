@@ -8,9 +8,13 @@ android {
     namespace = "com.example.househunter"
     compileSdk = 34
 
+    viewBinding{
+        enable = true
+    }
+
     defaultConfig {
         applicationId = "com.example.househunter"
-        minSdk = 33
+        minSdk = 31
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -58,4 +62,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation("com.navercorp.nid:oauth-jdk8:5.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 }
