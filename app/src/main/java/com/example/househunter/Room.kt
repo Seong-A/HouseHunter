@@ -14,7 +14,7 @@ data class Room(
     val mtype: String? = "",
     val parking: String? = "",
     val phone: String? = "",
-//    val photos: List<String> = listOf(),
+    val photos: HashMap<String, String>? = null,
     val room_bath: String? = "",
     val rtype: String? = "",
     val size: String? = "",

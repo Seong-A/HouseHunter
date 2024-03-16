@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager.widget.ViewPager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -42,6 +43,15 @@ class RoomDetailActivity : AppCompatActivity() {
                     val roomData = dataSnapshot.getValue(Room::class.java)
 
                     roomData?.let {
+                        val photoUrls: List<String>? = roomData.photos?.values?.toList()
+
+                        photoUrls?.let { urls ->
+                            // ViewPager와 이미지 URL 목록을 사용하여 이미지 표시
+                            val viewPager = findViewById<ViewPager>(R.id.viewPager)
+                            val adapter = PhotoPagerAdapter(urls)
+                            viewPager.adapter = adapter
+                        }
+
                         val textViewTitle = findViewById<TextView>(R.id.textViewTitle)
                         textViewTitle.text = "${roomData.rtype} ${roomData.fix_money} / ${roomData.monthly_money}"
 
