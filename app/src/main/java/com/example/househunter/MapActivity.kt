@@ -26,7 +26,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var roomsQuery: Query
 
     private lateinit var naverMap: NaverMap
-    private val markerRoomMap = mutableMapOf<Marker, String>()
 
     private val selectedRoomTypes = mutableSetOf<String>()
     private var selectedFixMoney = 0
@@ -120,16 +119,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             val textView = TextView(this)
             textView.text = roomType
             textView.setPadding(30, 8, 30, 8)
-            textView.setBackgroundResource(R.drawable.btn_gray_rounded) // 초기 배경
+            textView.setBackgroundResource(R.drawable.btn_gray_rounded)
             textView.setOnClickListener {
                 // 선택된 방 종류를 집합에 추가 또는 제거
                 if (selectedRoomTypes.contains(roomType)) {
                     selectedRoomTypes.remove(roomType)
-                    textView.setBackgroundResource(R.drawable.btn_gray_rounded) // 선택 해제
+                    textView.setBackgroundResource(R.drawable.btn_gray_rounded)
                 } else {
                     selectedRoomTypes.add(roomType)
-                    textView.setBackgroundResource(R.drawable.btn_red_rounded) // 선택
+                    textView.setBackgroundResource(R.drawable.btn_red_rounded)
                 }
+                applyFilter()
             }
             val layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -147,6 +147,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         seekBar1.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 selectedFixMoney = progress * 100 // 1 단위 = 100만원
+                applyFilter()
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -162,6 +163,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         seekBar2.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 selectedMonthlyMoney = progress * 10 // 1 단위 = 10만원
+                applyFilter()
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -177,6 +179,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         seekBar3.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 selectedManagementMoney = progress
+                applyFilter()
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -282,7 +285,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // 에러 처리
             }
         })
 
@@ -293,7 +295,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     // 방을 표시하는 함수
     private fun displayRooms(dataSnapshot: DataSnapshot) {
-        naverMap.clear() // 기존 마커 삭제
+        naverMap.clear()
+        markers.clear()
 
         for (roomSnapshot in dataSnapshot.children) {
             val room = roomSnapshot.getValue(Room::class.java)
@@ -308,41 +311,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     // 필터 적용 후 방을 다시 표시하는 함수
     private fun updateDisplayedRooms() {
-        // 필터 적용을 위한 Firebase 쿼리
         var query = roomsQuery
 
-        // 보증금 필터
-        if (selectedFixMoney > 0) {
-            query = query.orderByChild("fix_money").startAt(selectedFixMoney.toDouble())
-        }
-        // 방 종류 필터
-        if (selectedRoomTypes.isNotEmpty()) {
-            query = query.orderByChild("rtype").startAt(selectedRoomTypes.first())
-        }
-        // 월세 필터
-        if (selectedMonthlyMoney > 0) {
-            query = query.orderByChild("monthly_money").startAt(selectedMonthlyMoney.toDouble())
-        }
-        // 관리비 필터
-        if (selectedManagementMoney > 0) {
-            query = query.orderByChild("management_money").startAt(selectedManagementMoney.toDouble())
-        }
-
-        // 쿼리 실행
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // 결과가 있는 경우에만 마커 추가
                 if (dataSnapshot.exists()) {
-                    naverMap.clear() // 기존 마커 삭제
-                    displayRooms(dataSnapshot) // 필터 적용 후 방 다시 표시
+                    displayRooms(dataSnapshot)
                 } else {
-                    // 결과가 없는 경우에 대한 처리
-                    // 사용자에게 알림 또는 다른 처리 수행
+
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // 에러 처리
             }
         })
     }
@@ -358,12 +338,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             startActivity(intent)
             true // 클릭 이벤트 소비
         }
+        markers.add(marker)
     }
 
 
     // 필터가 변경될 때 호출되는 함수
     private fun onFilterChanged() {
-        updateDisplayedRooms() // 필터 적용 후 방 다시 표시
+        updateDisplayedRooms()
     }
 
     private fun clearMarkers() {
@@ -387,7 +368,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 }
-
 
 private val markers = mutableListOf<Marker>()
 private fun NaverMap.clear() {

@@ -2,6 +2,7 @@ package com.example.househunter
 
 data class Room(
     val roomID: String? = null,
+    val id : Long? = null,
     val date: String? = "",
     val elevator: String? = "",
     val fix_money: Long? = 0,
