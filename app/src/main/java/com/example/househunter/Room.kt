@@ -9,6 +9,7 @@ data class Room(
     val floor: String? = null,
     val latitude: Double? = 0.0,
     val location: String? = null,
+    val locate : String? = null,
     val longitude: Double? = 0.0,
     val management_money: Long? = 0,
     val monthly_money: Long? = 0,

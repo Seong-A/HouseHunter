@@ -346,6 +346,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         marker.setOnClickListener {
             val intent = Intent(this@MapActivity, RoomDetailActivity::class.java)
             intent.putExtra("roomID", room.roomID)
+            intent.putExtra("locate", room.locate)
             startActivity(intent)
             true // 클릭 이벤트 소비
         }

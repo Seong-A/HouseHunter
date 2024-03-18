@@ -30,6 +30,10 @@ class RoomDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_roomdetail)
 
+        val locate = intent.getStringExtra("locate")
+
+        saveRoomLocateToFirebase(locate)
+
         findViewById<View>(R.id.logo).setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -156,7 +160,6 @@ class RoomDetailActivity : AppCompatActivity() {
                             }
 
                             override fun onCancelled(error: DatabaseError) {
-                                // Handle error
                             }
                         })
 
@@ -164,7 +167,6 @@ class RoomDetailActivity : AppCompatActivity() {
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    // Handle error
                 }
             })
         }
@@ -204,6 +206,22 @@ class RoomDetailActivity : AppCompatActivity() {
                 }
                 .addOnFailureListener { e ->
                     Log.e("RoomDetailActivity", "Error removing room from favorites", e)
+                }
+        }
+    }
+
+    private fun saveRoomLocateToFirebase(locate: String?) {
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+        currentUserUid?.let { uid ->
+            val userRef = FirebaseDatabase.getInstance().reference
+                .child("users")
+                .child(uid)
+            userRef.child("locate").setValue(locate)
+                .addOnSuccessListener {
+                    Log.d("RoomDetailActivity", "Room locate added to user data")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("RoomDetailActivity", "Error adding room locate to user data", e)
                 }
         }
     }
