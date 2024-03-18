@@ -46,16 +46,19 @@ class MypageActivity : AppCompatActivity() {
                 R.id.home -> {
                     val homeintent = Intent(this, MainActivity::class.java)
                     startActivity(homeintent)
+                    finish()
                     true
                 }
                 R.id.like -> {
                     val likeintent = Intent(this, LikeActivity::class.java)
                     startActivity(likeintent)
+                    finish()
                     true
                 }
                 R.id.map -> {
                     val mapintent = Intent(this, MapActivity::class.java)
                     startActivity(mapintent)
+                    finish()
                     true
                 }
                 R.id.mypage -> {

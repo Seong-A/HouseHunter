@@ -17,19 +17,23 @@ class LikeActivity : AppCompatActivity() {
                 R.id.home -> {
                     val homeintent = Intent(this, MainActivity::class.java)
                     startActivity(homeintent)
+                    finish() // 현재 액티비티를 종료합니다.
                     true
                 }
                 R.id.like -> {
+                    // 이미 LikeActivity에 있으므로 아무것도 하지 않습니다.
                     true
                 }
                 R.id.map -> {
                     val mapintent = Intent(this, MapActivity::class.java)
                     startActivity(mapintent)
+                    finish() // 현재 액티비티를 종료합니다.
                     true
                 }
                 R.id.mypage -> {
                     val mypageintent = Intent(this, MypageActivity::class.java)
                     startActivity(mypageintent)
+                    finish() // 현재 액티비티를 종료합니다.
                     true
                 }
                 else -> false

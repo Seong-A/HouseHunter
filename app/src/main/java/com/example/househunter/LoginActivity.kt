@@ -93,7 +93,6 @@ class LoginActivity : AppCompatActivity(){
                 val userId = response.profile?.id
                 val userEmail = response.profile?.email
                 val userName = response.profile?.name
-                val userPhone = response.profile?.mobile
                 // 사용자 정보를 파이어베이스에 저장
                 saveUserToFirebase(userId, userEmail, userName)
                 Toast.makeText(this@LoginActivity, "네이버 아이디 로그인 성공!", Toast.LENGTH_SHORT).show()
@@ -140,6 +139,7 @@ class LoginActivity : AppCompatActivity(){
     private fun saveUserToFirebase(uid: String?, email: String?, name: String?) {
         uid?.let { uid ->
             val userMap = HashMap<String, Any>()
+            userMap["uid"] = uid ?:""
             userMap["email"] = email ?: ""
             userMap["name"] = name ?: ""
 

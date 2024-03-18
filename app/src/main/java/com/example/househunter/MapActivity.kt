@@ -247,11 +247,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 R.id.home -> {
                     val homeintent = Intent(this, MainActivity::class.java)
                     startActivity(homeintent)
+                    finish()
                     true
                 }
                 R.id.like -> {
                     val likeintent = Intent(this, LikeActivity::class.java)
                     startActivity(likeintent)
+                    finish()
                     true
                 }
                 R.id.map -> {
@@ -260,6 +262,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 R.id.mypage -> {
                     val mypageintent = Intent(this, MypageActivity::class.java)
                     startActivity(mypageintent)
+                    finish()
                     true
                 }
                 else -> false
