@@ -17,6 +17,9 @@ import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val database = FirebaseDatabase.getInstance()
+    private lateinit var roomsQuery: Query
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var roomAdapter: RoomAdapter
     private lateinit var roomsList: MutableList<Room>
@@ -27,6 +30,8 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+
+        roomsQuery = database.getReference("rooms")
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         roomsList = mutableListOf()
