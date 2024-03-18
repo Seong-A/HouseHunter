@@ -9,26 +9,61 @@ import android.widget.TextView
 import android.widget.VideoView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val database = FirebaseDatabase.getInstance()
-    private lateinit var roomsQuery: Query
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var roomAdapter: RoomAdapter
+    private lateinit var roomsList: MutableList<Room>
+    private lateinit var databaseRef: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        roomsQuery = database.getReference("rooms")
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        roomsList = mutableListOf()
+        roomAdapter = RoomAdapter(roomsList)
+        recyclerView.adapter = roomAdapter
+
+        databaseRef = FirebaseDatabase.getInstance().reference.child("rooms")
+        databaseRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                roomsList.clear()
+                val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+                val usersRef = FirebaseDatabase.getInstance().reference.child("users").child(currentUserUid ?: "")
+
+                usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(userSnapshot: DataSnapshot) {
+                        val userData = userSnapshot.getValue(User::class.java)
+
+                        dataSnapshot.children.forEach { roomSnapshot ->
+                            val room = roomSnapshot.getValue(Room::class.java)
+                            if (room != null && userData != null && userData.locate == room.locate) {
+                                roomsList.add(room)
+                            }
+                        }
+
+                        roomAdapter.notifyDataSetChanged()
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        // Handle error
+                    }
+                })
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        })
 
         findViewById<View>(R.id.logo).setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)

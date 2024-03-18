@@ -172,38 +172,52 @@
                 android:background="@color/gray" />
 
             <LinearLayout
+                android:id="@+id/ai_layout"
                 android:layout_width="match_parent"
-                android:layout_height="280dp">
+                android:layout_height="350dp"
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="20dp"
+                        android:text=" 💡 AI가 추천해주는 "
+                        android:textColor="@color/black"
+                        android:textSize="25dp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/AI"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="20dp"
+                        android:text="00동"
+                        android:textColor="@color/red"
+                        android:textSize="25dp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="20dp"
+                        android:text=" 집"
+                        android:textColor="@color/black"
+                        android:textSize="25dp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginStart="20dp"
-                    android:text=" 💡 AI가 추천해주는 "
-                    android:textColor="@color/black"
-                    android:textSize="25dp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/AI"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="20dp"
-                    android:text="00동"
-                    android:textColor="@color/red"
-                    android:textSize="25dp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="20dp"
-                    android:text=" 집"
-                    android:textColor="@color/black"
-                    android:textSize="25dp"
-                    android:textStyle="bold"/>
-
+                    android:orientation="horizontal" />
             </LinearLayout>
 
             <View
