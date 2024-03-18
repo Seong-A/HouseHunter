@@ -38,6 +38,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         roomsQuery = database.getReference("rooms")
 
+        val selectedRoomType = intent.getStringExtra("selectedRoomType")
+
+        selectedRoomType?.let {
+            selectedRoomTypes.add(it)
+        }
+
         findViewById<View>(R.id.logo).setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -139,6 +145,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             textView.layoutParams = layoutParams
             roomTypeContainer.addView(textView)
         }
+
+
 
         // 보증금 SeekBar 초기화
         val seekBar1 = findViewById<SeekBar>(R.id.seek_bar1)

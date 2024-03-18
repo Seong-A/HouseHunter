@@ -70,7 +70,7 @@ class RoomDetailActivity : AppCompatActivity() {
                         val monthlymTextView = findViewById<TextView>(R.id.monthly_money)
                         monthlymTextView.text = roomData.monthly_money.toString()
 
-                        val managementmTextView = findViewById<TextView>(R.id.management_m)
+                        val managementmTextView = findViewById<TextView>(R.id.management_money2)
                         managementmTextView.text = roomData.management_money.toString()
 
                         val parkingTextView = findViewById<TextView>(R.id.parking)
