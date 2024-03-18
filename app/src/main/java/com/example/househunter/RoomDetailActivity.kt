@@ -4,9 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -22,6 +24,7 @@ class RoomDetailActivity : AppCompatActivity() {
 
     private lateinit var databaseReference: DatabaseReference
     private var roomID: String? = null
+    private var isFavorite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +33,19 @@ class RoomDetailActivity : AppCompatActivity() {
         findViewById<View>(R.id.logo).setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+        }
+
+        val heartIcon = findViewById<ImageView>(R.id.heartIcon)
+        heartIcon.setOnClickListener {
+            isFavorite = !isFavorite // 즐겨찾기 상태를 토글
+
+            if (isFavorite) {
+                heartIcon.setImageResource(R.drawable.ic_heart_filled)
+                addToFavorites(roomID)
+            } else {
+                heartIcon.setImageResource(R.drawable.ic_heart_empty)
+                removeFromFavorites(roomID)
+            }
         }
 
         roomID = intent.getStringExtra("roomID")
@@ -122,8 +138,27 @@ class RoomDetailActivity : AppCompatActivity() {
                             naverMap.moveCamera(cameraUpdate)
                         }
 
-//                        val viewPager: ViewPager = findViewById(R.id.viewPager)
-//                        val photoUrls: List<String> = roomData.photos
+                        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+                        val isFavoriteRef = FirebaseDatabase.getInstance().reference
+                            .child("users")
+                            .child(currentUserUid ?: "")
+                            .child("Favorite")
+                            .child(roomID ?: "")
+
+                        isFavoriteRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                val isFavorite = snapshot.getValue(Boolean::class.java) ?: false
+                                if (isFavorite) {
+                                    heartIcon.setImageResource(R.drawable.ic_heart_filled)
+                                } else {
+                                    heartIcon.setImageResource(R.drawable.ic_heart_empty)
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                // Handle error
+                            }
+                        })
 
                     }
                 }
@@ -134,4 +169,43 @@ class RoomDetailActivity : AppCompatActivity() {
             })
         }
     }
+
+    private fun addToFavorites(roomId: String?) {
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        currentUserUid?.let { uid ->
+            val favoriteRef = FirebaseDatabase.getInstance().reference
+                .child("users")
+                .child(uid)
+                .child("Favorite")
+                .child(roomId ?: "")
+            favoriteRef.setValue(true)
+                .addOnSuccessListener {
+                    Log.d("RoomDetailActivity", "Room added to favorites")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("RoomDetailActivity", "Error adding room to favorites", e)
+                }
+        }
+    }
+
+    private fun removeFromFavorites(roomId: String?) {
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        currentUserUid?.let { uid ->
+            val favoriteRef = FirebaseDatabase.getInstance().reference
+                .child("users")
+                .child(uid)
+                .child("Favorite")
+                .child(roomId ?: "")
+            favoriteRef.removeValue()
+                .addOnSuccessListener {
+                    Log.d("RoomDetailActivity", "Room removed from favorites")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("RoomDetailActivity", "Error removing room from favorites", e)
+                }
+        }
+    }
+
 }

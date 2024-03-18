@@ -8,8 +8,8 @@
         android:id="@+id/like"
         android:enabled="true"
         android:title="찜한 집" />
-    <item
-        android:id="@+id/bookmark"
-        android:enabled="true"
-        android:title="즐겨찾기" />
+<!--    <item-->
+<!--        android:id="@+id/bookmark"-->
+<!--        android:enabled="true"-->
+<!--        android:title="즐겨찾기" />-->
 </menu>
