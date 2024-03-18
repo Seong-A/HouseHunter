@@ -31,6 +31,9 @@ android {
             )
         }
     }
+    buildFeatures {
+        dataBinding = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -67,4 +70,6 @@ dependencies {
 
     implementation("com.navercorp.nid:oauth-jdk8:5.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+
+    implementation("androidx.cardview:cardview:1.0.0")
 }
