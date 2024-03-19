@@ -52,12 +52,12 @@
             android:padding="20dp" />
 
         <TextView
-            android:id="@+id/policy"
+            android:id="@+id/contents"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:background="@drawable/border_gray_background"
             android:gravity="center_vertical"
-            android:text=" 약관 및 정책"
+            android:text=" 추천 콘텐츠"
             android:textColor="@color/black"
             android:textSize="25dp"
             android:padding="20dp" />

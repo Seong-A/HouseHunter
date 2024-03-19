@@ -50,7 +50,10 @@
             android:name=".ServiceActivity"
             android:exported="true">
         </activity>
-
+        <activity
+            android:name=".ContentActivity"
+            android:exported="true">
+        </activity>
         <activity
             android:name=".LoginActivity"
             android:exported="true">

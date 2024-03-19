@@ -39,6 +39,11 @@ class MypageActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        findViewById<View>(R.id.contents).setOnClickListener {
+            val intent = Intent(this, ContentActivity::class.java)
+            startActivity(intent)
+        }
+
         findViewById<View>(R.id.service).setOnClickListener {
             val intent = Intent(this, ServiceActivity::class.java)
             startActivity(intent)
