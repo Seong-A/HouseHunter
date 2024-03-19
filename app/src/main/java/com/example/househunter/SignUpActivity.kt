@@ -22,24 +22,20 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        // FirebaseAuth 및 FirebaseDatabase 인스턴스 초기화
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
 
-        // EditText 요소 초기화
         val etEmail = findViewById<EditText>(R.id.EditEmail)
         val etPassword = findViewById<EditText>(R.id.EditPass)
         val etConfirmPassword = findViewById<EditText>(R.id.EditInfo)
         val etName = findViewById<EditText>(R.id.EditName)
         val etPhoneNumber = findViewById<EditText>(R.id.EditPhone)
 
-        // 회원가입 버튼 초기화
         val btnSignUp = findViewById<Button>(R.id.SignupBtn)
 
         // 회원가입 버튼 클릭 설정
         btnSignUp.setOnClickListener {
 
-            // Edittext에서 텍스트 가져오기
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
             val confirmPassword = etConfirmPassword.text.toString().trim()

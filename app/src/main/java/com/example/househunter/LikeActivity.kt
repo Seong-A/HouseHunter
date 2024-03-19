@@ -2,6 +2,7 @@ package com.example.househunter
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.naver.maps.map.NaverMapSdk
 
 class LikeActivity : AppCompatActivity() {
 
@@ -65,13 +67,16 @@ class LikeActivity : AppCompatActivity() {
                                         }
 
                                         roomLayout.setOnClickListener {
-                                            val roomId = roomDataSnapshot.key
+                                            val roomID = roomDataSnapshot.key
                                             val intent = Intent(this@LikeActivity, RoomDetailActivity::class.java).apply {
-                                                putExtra("roomId", roomId)
+                                                putExtra("roomID", roomID)
+                                                Log.d("LikeActivity", "Room ID: $roomID")
                                                 putExtra("locate", room.locate)
                                             }
                                             startActivity(intent)
                                         }
+
+
 
                                         likeroomContainer.addView(roomLayout)
 
@@ -79,17 +84,16 @@ class LikeActivity : AppCompatActivity() {
                                 }
 
                                 override fun onCancelled(databaseError: DatabaseError) {
-                                    // 처리 실패 시 동작
                                 }
                             })
                         }
                     } else {
-                        // 사용자의 Favorite 데이터가 없는 경우 처리
+
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    // 처리 실패 시 동작
+
                 }
             })
         }
@@ -99,28 +103,33 @@ class LikeActivity : AppCompatActivity() {
                 R.id.home -> {
                     val homeintent = Intent(this, MainActivity::class.java)
                     startActivity(homeintent)
-                    finish() // 현재 액티비티를 종료합니다.
+                    finish()
                     true
                 }
                 R.id.like -> {
-                    // 이미 LikeActivity에 있으므로 아무것도 하지 않습니다.
                     true
                 }
                 R.id.map -> {
                     val mapintent = Intent(this, MapActivity::class.java)
                     startActivity(mapintent)
-                    finish() // 현재 액티비티를 종료합니다.
+                    finish()
                     true
                 }
                 R.id.mypage -> {
                     val mypageintent = Intent(this, MypageActivity::class.java)
                     startActivity(mypageintent)
-                    finish() // 현재 액티비티를 종료합니다.
+                    finish()
                     true
                 }
                 else -> false
             }
         }
         bottomNavigationView.selectedItemId = R.id.like
+
+        // 네이버 지도 클라이언트 ID 가져오기
+        val naverClientId = getString(R.string.NAVER_CLIENT_ID)
+
+        // 네이버 지도 SDK에 클라이언트 ID 설정
+        NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient(naverClientId)
     }
 }

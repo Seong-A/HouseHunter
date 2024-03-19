@@ -1,6 +1,7 @@
 package com.example.househunter
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
@@ -145,8 +146,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             textView.layoutParams = layoutParams
             roomTypeContainer.addView(textView)
         }
-
-
 
         // 보증금 SeekBar 초기화
         val seekBar1 = findViewById<SeekBar>(R.id.seek_bar1)
@@ -296,6 +295,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             override fun onCancelled(error: DatabaseError) {
+                Log.e("MapActivity", "지도 불러오기 실패")
             }
         })
 
@@ -334,6 +334,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             override fun onCancelled(error: DatabaseError) {
+                Log.e("MapActivity", "필터 적용 실패")
             }
         })
     }
@@ -348,11 +349,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             intent.putExtra("roomID", room.roomID)
             intent.putExtra("locate", room.locate)
             startActivity(intent)
-            true // 클릭 이벤트 소비
+            true
         }
         markers.add(marker)
     }
-
 
     // 필터가 변경될 때 호출되는 함수
     private fun onFilterChanged() {

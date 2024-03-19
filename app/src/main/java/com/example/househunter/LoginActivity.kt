@@ -146,10 +146,10 @@ class LoginActivity : AppCompatActivity(){
             val database: DatabaseReference = FirebaseDatabase.getInstance().reference
             database.child("users").child(uid).setValue(userMap)
                 .addOnSuccessListener {
-                    Log.d("LoginActivity", "User data saved to Firebase")
+                        Log.d("LoginActivity", "회원 등록 성공")
                 }
                 .addOnFailureListener { e ->
-                    Log.w("LoginActivity", "Error saving user data to Firebase", e)
+                    Log.w("LoginActivity", "회원 등록 실패", e)
                 }
         }
     }

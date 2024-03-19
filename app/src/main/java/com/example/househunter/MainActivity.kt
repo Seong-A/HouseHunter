@@ -3,6 +3,7 @@ package com.example.househunter
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -24,12 +25,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var roomAdapter: RoomAdapter
     private lateinit var roomsList: MutableList<Room>
     private lateinit var databaseRef: DatabaseReference
+    private var currentUserUid: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-
 
         roomsQuery = database.getReference("rooms")
         recyclerView = findViewById(R.id.recyclerView)
@@ -38,48 +39,11 @@ class MainActivity : AppCompatActivity() {
         roomAdapter = RoomAdapter(roomsList)
         recyclerView.adapter = roomAdapter
 
-        databaseRef = FirebaseDatabase.getInstance().reference.child("rooms")
-        databaseRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                roomsList.clear()
-                val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
-                val usersRef = FirebaseDatabase.getInstance().reference.child("users").child(currentUserUid ?: "")
+        databaseRef = database.reference.child("rooms")
+        currentUserUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-                usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(userSnapshot: DataSnapshot) {
-                        val userData = userSnapshot.getValue(User::class.java)
-
-                        dataSnapshot.children.forEach { roomSnapshot ->
-                            val room = roomSnapshot.getValue(Room::class.java)
-                            if (room != null && userData != null && userData.locate == room.locate) {
-                                roomsList.add(room)
-                            }
-                        }
-
-                        roomAdapter.notifyDataSetChanged()
-                    }
-
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        // Handle error
-                    }
-                })
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Handle error
-            }
-        })
-
-        findViewById<View>(R.id.logo).setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-
-        findViewById<View>(R.id.room1).setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra("selectedRoomType", "원룸")
-            startActivity(intent)
-        }
+        setupRoomList()
+        setupRoomClickListeners()
 
         val room1 = findViewById<VideoView>(R.id.room1_videoView)
         val room1Url = "https://cdn-icons-mp4.flaticon.com/512/8121/8121334.mp4"
@@ -158,7 +122,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                // 에러 처리
+                Log.e("MainActivity", "Firebase database error: ${databaseError.message}")
             }
         })
 
@@ -189,5 +153,72 @@ class MainActivity : AppCompatActivity() {
             }
         }
         bottomNavigationView.selectedItemId = R.id.home
+    }
+
+    private fun setupRoomList() {
+        databaseRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                roomsList.clear()
+                val usersRef = database.reference.child("users").child(currentUserUid)
+
+                usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(userSnapshot: DataSnapshot) {
+                        val userData = userSnapshot.getValue(User::class.java)
+
+                        dataSnapshot.children.forEach { roomSnapshot ->
+                            val room = roomSnapshot.getValue(Room::class.java)
+                            if (room != null && userData != null && userData.locate == room.locate) {
+                                val modifiedRoom = room.copy(roomID = roomSnapshot.key)
+                                roomsList.add(modifiedRoom)
+                            }
+                        }
+
+                        roomAdapter.notifyDataSetChanged()
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.e("MainActivity", "Firebase database error: ${databaseError.message}")
+                    }
+                })
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("MainActivity", "Firebase database error: ${databaseError.message}")
+            }
+        })
+    }
+
+    private fun setupRoomClickListeners() {
+        roomAdapter.setOnItemClickListener { room ->
+            val intent = Intent(this@MainActivity, RoomDetailActivity::class.java).apply {
+                putExtra("roomID", room.roomID)
+                Log.d("MainActivity", "Room ID: ${room.roomID}")
+                putExtra("locate", room.locate)
+            }
+            startActivity(intent)
+        }
+
+        findViewById<View>(R.id.room1).setOnClickListener {
+            startMapActivityWithRoomType("원룸")
+        }
+
+        findViewById<View>(R.id.room2).setOnClickListener {
+            startMapActivityWithRoomType("투ㆍ쓰리룸")
+        }
+
+        findViewById<View>(R.id.officetel).setOnClickListener {
+            startMapActivityWithRoomType("오피스텔")
+        }
+
+        findViewById<View>(R.id.apartment).setOnClickListener {
+            startMapActivityWithRoomType("아파트")
+        }
+    }
+
+    private fun startMapActivityWithRoomType(roomType: String) {
+        val intent = Intent(this, MapActivity::class.java).apply {
+            putExtra("selectedRoomType", roomType)
+        }
+        startActivity(intent)
     }
 }

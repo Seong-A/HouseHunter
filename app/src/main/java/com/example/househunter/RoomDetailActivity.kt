@@ -183,10 +183,10 @@ class RoomDetailActivity : AppCompatActivity() {
                 .child(roomId ?: "")
             favoriteRef.setValue(true)
                 .addOnSuccessListener {
-                    Log.d("RoomDetailActivity", "Room added to favorites")
+                    Log.d("RoomDetailActivity", "방 찜하기")
                 }
                 .addOnFailureListener { e ->
-                    Log.e("RoomDetailActivity", "Error adding room to favorites", e)
+                    Log.e("RoomDetailActivity", "찜하기 실패", e)
                 }
         }
     }
@@ -202,10 +202,10 @@ class RoomDetailActivity : AppCompatActivity() {
                 .child(roomId ?: "")
             favoriteRef.removeValue()
                 .addOnSuccessListener {
-                    Log.d("RoomDetailActivity", "Room removed from favorites")
+                    Log.d("RoomDetailActivity", "찜에서 삭제")
                 }
                 .addOnFailureListener { e ->
-                    Log.e("RoomDetailActivity", "Error removing room from favorites", e)
+                    Log.e("RoomDetailActivity", "찜에서 삭제 실패", e)
                 }
         }
     }
@@ -218,10 +218,10 @@ class RoomDetailActivity : AppCompatActivity() {
                 .child(uid)
             userRef.child("locate").setValue(locate)
                 .addOnSuccessListener {
-                    Log.d("RoomDetailActivity", "Room locate added to user data")
+                    Log.d("RoomDetailActivity", "관심 있어 하는 동네 저장")
                 }
                 .addOnFailureListener { e ->
-                    Log.e("RoomDetailActivity", "Error adding room locate to user data", e)
+                    Log.e("RoomDetailActivity", "관심있는 동네 데이터 저장 실패", e)
                 }
         }
     }
