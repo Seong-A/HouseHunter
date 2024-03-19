@@ -19,10 +19,10 @@ class RoomAdapter(private val rooms: List<Room>) :
     }
 
     inner class RoomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val roomImageView: ImageView = itemView.findViewById(R.id.roomImageView)
-        val roomTitleTextView: TextView = itemView.findViewById(R.id.roomTitleTextView)
-        val monthlyRent: TextView = itemView.findViewById(R.id.monthlyRent)
-        val deposit: TextView = itemView.findViewById(R.id.deposit)
+        val roomImageView: ImageView = itemView.findViewById(R.id.ai_imageArea)
+        val moneyTextView: TextView = itemView.findViewById(R.id.money)
+        val rtypeTextView: TextView = itemView.findViewById(R.id.rtype)
+        val roomInfoTextView: TextView = itemView.findViewById(R.id.ai_room_info)
 
         init {
             // 아이템 클릭 시
@@ -54,9 +54,9 @@ class RoomAdapter(private val rooms: List<Room>) :
             }
         }
 
-        holder.roomTitleTextView.text = room.location
-        holder.monthlyRent.text = room.monthly_money?.toString() ?: "N/A"
-        holder.deposit.text = room.fix_money?.toString() ?: "N/A"
+        holder.moneyTextView.text = "월세 ${room.fix_money} / ${room.monthly_money}"
+        holder.rtypeTextView.text = room.rtype
+        holder.roomInfoTextView.text = "${room.floor}, 관리비 ${room.management_money}만"
 
     }
 
