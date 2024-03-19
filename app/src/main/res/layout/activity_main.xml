@@ -174,7 +174,7 @@
             <LinearLayout
                 android:id="@+id/ai_layout"
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
+                android:layout_height="290dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -186,6 +186,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
                         android:layout_marginTop="20dp"
+                        android:layout_marginBottom="10dp"
                         android:layout_marginStart="20dp"
                         android:text=" 💡 AI가 추천해주는 "
                         android:textColor="@color/black"
