@@ -9,6 +9,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -345,14 +346,38 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         marker.position = LatLng(room.latitude ?: 0.0, room.longitude ?: 0.0)
         marker.map = naverMap
         marker.setOnClickListener {
-            val intent = Intent(this@MapActivity, RoomDetailActivity::class.java)
-            intent.putExtra("roomID", room.roomID)
-            intent.putExtra("locate", room.locate)
-            startActivity(intent)
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            currentUser?.let { user ->
+                val userId = user.uid
+                val userRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
+                val recentlyRef = userRef.child("Recently")
+
+                // 방 ID와 타임스탬프를 Recently 리스트에 추가
+                val roomID = room.roomID ?: ""
+                val timestamp = System.currentTimeMillis().toString()
+                val roomData = mapOf(
+                    "roomID" to roomID,
+                    "timestamp" to timestamp
+                )
+
+                recentlyRef.child(roomID).setValue(roomData)
+                    .addOnSuccessListener {
+                        // 방 ID 추가 성공 시 RoomDetailActivity로 이동
+                        val intent = Intent(this@MapActivity, RoomDetailActivity::class.java)
+                        intent.putExtra("roomID", roomID)
+                        intent.putExtra("locate", room.locate)
+                        startActivity(intent)
+                    }
+                    .addOnFailureListener { exception ->
+                        // 실패한 경우 로그를 출력하거나 적절한 예외 처리를 수행할 수 있습니다.
+                        Log.e("MapActivity", "Failed to add room ID to Recently: ${exception.message}")
+                    }
+            }
             true
         }
         markers.add(marker)
     }
+
 
     // 필터가 변경될 때 호출되는 함수
     private fun onFilterChanged() {

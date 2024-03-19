@@ -17,16 +17,163 @@ class LikeActivity : AppCompatActivity() {
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
 
+    private lateinit var likeroomContainer: LinearLayout
+    private val MAX_RECENT_ITEMS = 10 // 표시할 최대 최근 항목 수
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_like)
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        val likeroomContainer: LinearLayout = findViewById(R.id.likeroomContainer)
+        val likeListMenuItem = findViewById<BottomNavigationView>(R.id.like_list)
+        likeroomContainer = findViewById(R.id.likeroomContainer)
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
 
+        likeListMenuItem.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.recently -> {
+                    updateRecentlyViewedRooms()
+                    true
+                }
+                R.id.like -> {
+                    updateFavoriteRooms()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.home -> {
+                    val homeIntent = Intent(this, MainActivity::class.java)
+                    startActivity(homeIntent)
+                    finish()
+                    true
+                }
+                R.id.like -> {
+                    true
+                }
+                R.id.map -> {
+                    val mapIntent = Intent(this, MapActivity::class.java)
+                    startActivity(mapIntent)
+                    finish()
+                    true
+                }
+                R.id.mypage -> {
+                    val mypageIntent = Intent(this, MypageActivity::class.java)
+                    startActivity(mypageIntent)
+                    finish()
+                    true
+                }
+                else -> false
+            }
+        }
+        bottomNavigationView.selectedItemId = R.id.like
+
+        // 네이버 지도 클라이언트 ID 가져오기
+        val naverClientId = getString(R.string.NAVER_CLIENT_ID)
+
+        // 네이버 지도 SDK에 클라이언트 ID 설정
+        NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient(naverClientId)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 최근 본 방 업데이트
+        updateRecentlyViewedRooms()
+    }
+
+    private fun updateRecentlyViewedRooms() {
+        likeroomContainer.removeAllViews()
+        val currentUser = auth.currentUser
+        currentUser?.let {
+            val userId = it.uid
+            val userRef = database.child("users").child(userId)
+
+            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.hasChild("Recently")) {
+                        val recentRooms = dataSnapshot.child("Recently").children
+                            .mapNotNull { roomSnapshot ->
+                                val roomId = roomSnapshot.key
+                                val timestampString = roomSnapshot.child("timestamp").value as String
+                                val timestamp = timestampString.toLong()
+                                Pair(roomId, timestamp)
+                            }
+                            .sortedByDescending { it.second } // timestamp를 기준으로 내림차순으로 정렬
+                            .take(MAX_RECENT_ITEMS)
+
+                        for ((roomId, _) in recentRooms) {
+                            val roomRef = database.child("rooms").child(roomId ?: "")
+                            roomRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(roomDataSnapshot: DataSnapshot) {
+                                    val room = roomDataSnapshot.getValue(Room::class.java)
+                                    room?.let {
+                                        val roomLayout = layoutInflater.inflate(R.layout.likeroom_layout, null)
+                                        val moneyTextView: TextView = roomLayout.findViewById(R.id.money)
+                                        val rtypeTextView: TextView = roomLayout.findViewById(R.id.rtype)
+                                        val roomInfoTextView: TextView = roomLayout.findViewById(R.id.like_room_info)
+
+                                        // 방 정보 설정
+                                        moneyTextView.text = "월세 ${room.fix_money} / ${room.monthly_money}"
+                                        rtypeTextView.text = room.rtype
+                                        roomInfoTextView.text = "${room.floor}, 관리비 ${room.management_money}만"
+
+                                        // ViewPager 설정
+                                        val viewPager: ViewPager = roomLayout.findViewById(R.id.likeroom_imageArea)
+
+                                        // 사진이 있는 경우와 없는 경우에 따라 어댑터 설정
+                                        val adapter = if (room.photos != null && room.photos.isNotEmpty()) {
+                                            PhotoPagerAdapter(room.photos.values.toList())
+                                        } else {
+                                            PhotoPagerAdapter(emptyList())
+                                        }
+                                        viewPager.adapter = adapter
+
+                                        roomLayout.setOnClickListener {
+                                            val roomID = roomDataSnapshot.key
+                                            val intent = Intent(this@LikeActivity, RoomDetailActivity::class.java).apply {
+                                                putExtra("roomID", roomID)
+                                                Log.d("LikeActivity", "Room ID: $roomID")
+                                                putExtra("locate", room.locate)
+                                            }
+                                            val currentUser = auth.currentUser
+                                            currentUser?.let {
+                                                val userId = it.uid
+                                                val userRef = database.child("users").child(userId).child("Recently")
+                                                val timestamp = System.currentTimeMillis().toString()
+                                                val updateMap = mapOf(roomID to mapOf("roomID" to roomID, "timestamp" to timestamp))
+                                                userRef.updateChildren(updateMap)
+                                            }
+                                            startActivity(intent)
+                                        }
+
+                                        likeroomContainer.addView(roomLayout)
+                                    }
+                                }
+
+                                override fun onCancelled(databaseError: DatabaseError) {
+                                    // onCancelled 이벤트 처리
+                                }
+                            })
+                        }
+                    } else {
+                        // "Recently" 노드가 없거나 비어있는 경우 처리
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // onCancelled 이벤트 처리
+                }
+            })
+        }
+    }
+
+    private fun updateFavoriteRooms() {
+        likeroomContainer.removeAllViews()
         val currentUser = auth.currentUser
         currentUser?.let {
             val userId = it.uid
@@ -73,63 +220,35 @@ class LikeActivity : AppCompatActivity() {
                                                 Log.d("LikeActivity", "Room ID: $roomID")
                                                 putExtra("locate", room.locate)
                                             }
+                                            val currentUser = auth.currentUser
+                                            currentUser?.let {
+                                                val userId = it.uid
+                                                val userRef = database.child("users").child(userId).child("Recently")
+                                                val timestamp = System.currentTimeMillis().toString()
+                                                val updateMap = mapOf(roomID to mapOf("roomID" to roomID, "timestamp" to timestamp))
+                                                userRef.updateChildren(updateMap)
+                                            }
                                             startActivity(intent)
                                         }
 
-
-
                                         likeroomContainer.addView(roomLayout)
-
                                     }
                                 }
 
                                 override fun onCancelled(databaseError: DatabaseError) {
+                                    // onCancelled 이벤트 처리
                                 }
                             })
                         }
                     } else {
-
+                        // "Favorite" 노드가 없는 경우 처리
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-
+                    // onCancelled 이벤트 처리
                 }
             })
         }
-
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.home -> {
-                    val homeintent = Intent(this, MainActivity::class.java)
-                    startActivity(homeintent)
-                    finish()
-                    true
-                }
-                R.id.like -> {
-                    true
-                }
-                R.id.map -> {
-                    val mapintent = Intent(this, MapActivity::class.java)
-                    startActivity(mapintent)
-                    finish()
-                    true
-                }
-                R.id.mypage -> {
-                    val mypageintent = Intent(this, MypageActivity::class.java)
-                    startActivity(mypageintent)
-                    finish()
-                    true
-                }
-                else -> false
-            }
-        }
-        bottomNavigationView.selectedItemId = R.id.like
-
-        // 네이버 지도 클라이언트 ID 가져오기
-        val naverClientId = getString(R.string.NAVER_CLIENT_ID)
-
-        // 네이버 지도 SDK에 클라이언트 ID 설정
-        NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient(naverClientId)
     }
 }
