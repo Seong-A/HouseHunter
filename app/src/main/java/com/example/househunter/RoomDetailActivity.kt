@@ -22,6 +22,8 @@ import com.naver.maps.map.overlay.Marker
 
 class RoomDetailActivity : AppCompatActivity() {
 
+    private lateinit var database: DatabaseReference
+    private lateinit var auth: FirebaseAuth
     private lateinit var databaseReference: DatabaseReference
     private var roomID: String? = null
     private var isFavorite: Boolean = false
@@ -29,6 +31,12 @@ class RoomDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_roomdetail)
+
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance().reference
+
+        // 뒤로 가기 버튼 클릭 시 최근 본 방 업데이트
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val locate = intent.getStringExtra("locate")
 
@@ -223,6 +231,26 @@ class RoomDetailActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     Log.e("RoomDetailActivity", "관심있는 동네 데이터 저장 실패", e)
                 }
+        }
+    }
+    override fun onSupportNavigateUp(): Boolean {
+        updateRecentlyViewedRooms()
+        onBackPressed()
+        return true
+    }
+    private fun updateRecentlyViewedRooms() {
+        val currentUser = auth.currentUser
+        currentUser?.let {
+            val userId = it.uid
+            val userRef = database.child("users").child(userId).child("Recently")
+
+            val roomID = intent.getStringExtra("roomID")
+
+            roomID?.let {
+                val timestamp = System.currentTimeMillis().toString()
+                val updateMap = mapOf(it to mapOf("roomID" to it, "timestamp" to timestamp))
+                userRef.child(it).setValue(updateMap)
+            }
         }
     }
 

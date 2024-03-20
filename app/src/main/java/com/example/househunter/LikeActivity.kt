@@ -18,13 +18,14 @@ class LikeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     private lateinit var likeroomContainer: LinearLayout
+    private lateinit var bottomNavigationView: BottomNavigationView
     private val MAX_RECENT_ITEMS = 10 // 표시할 최대 최근 항목 수
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_like)
 
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
         val likeListMenuItem = findViewById<BottomNavigationView>(R.id.like_list)
         likeroomContainer = findViewById(R.id.likeroomContainer)
 
@@ -82,8 +83,13 @@ class LikeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // 최근 본 방 업데이트
-        updateRecentlyViewedRooms()
+
+        // 현재 선택된 메뉴에 따라 다른 함수 호출
+        val selectedMenuId = bottomNavigationView.selectedItemId
+        when (selectedMenuId) {
+            R.id.recently -> updateRecentlyViewedRooms()
+            R.id.like -> updateFavoriteRooms()
+        }
     }
 
     private fun updateRecentlyViewedRooms() {
