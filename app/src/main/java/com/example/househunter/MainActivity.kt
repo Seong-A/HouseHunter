@@ -56,9 +56,7 @@ class MainActivity : AppCompatActivity() {
         room1.start()
 
         findViewById<View>(R.id.room2).setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra("selectedRoomType", "투ㆍ쓰리룸")
-            startActivity(intent)
+            startMapActivityWithRoomType("투ㆍ쓰리룸")
         }
 
         val room2 = findViewById<VideoView>(R.id.room2_videoView)
@@ -72,9 +70,7 @@ class MainActivity : AppCompatActivity() {
         room2.start()
 
         findViewById<View>(R.id.officetel).setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra("selectedRoomType", "오피스텔")
-            startActivity(intent)
+            startMapActivityWithRoomType("오피스텔")
         }
 
         val officetel = findViewById<VideoView>(R.id.officetel_videoView)
@@ -88,9 +84,7 @@ class MainActivity : AppCompatActivity() {
         officetel.start()
 
         findViewById<View>(R.id.apartment).setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra("selectedRoomType", "아파트")
-            startActivity(intent)
+            startMapActivityWithRoomType("아파트")
         }
 
         val apartment = findViewById<VideoView>(R.id.apartment_videoView)
@@ -190,6 +184,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRoomClickListeners() {
         roomAdapter.setOnItemClickListener { room ->
+            addToRecentlyViewedRooms(room)
+
             val intent = Intent(this@MainActivity, RoomDetailActivity::class.java).apply {
                 putExtra("roomID", room.roomID)
                 Log.d("MainActivity", "Room ID: ${room.roomID}")
@@ -212,6 +208,21 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.apartment).setOnClickListener {
             startMapActivityWithRoomType("아파트")
+        }
+    }
+
+    private fun addToRecentlyViewedRooms(room: Room) {
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+        currentUserUid?.let { uid ->
+            val userRef = FirebaseDatabase.getInstance().reference.child("users").child(uid).child("Recently")
+            val timestamp = System.currentTimeMillis().toString()
+            val roomData = mapOf(
+                room.roomID to mapOf(
+                    "roomID" to room.roomID,
+                    "timestamp" to timestamp
+                )
+            )
+            userRef.updateChildren(roomData)
         }
     }
 

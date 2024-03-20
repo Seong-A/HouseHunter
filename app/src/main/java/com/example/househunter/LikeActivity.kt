@@ -79,6 +79,8 @@ class LikeActivity : AppCompatActivity() {
 
         // 네이버 지도 SDK에 클라이언트 ID 설정
         NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient(naverClientId)
+
+        updateRecentlyViewedRooms()
     }
 
     override fun onResume() {

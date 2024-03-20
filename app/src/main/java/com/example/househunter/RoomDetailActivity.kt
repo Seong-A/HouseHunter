@@ -18,6 +18,7 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.overlay.Marker
 
 class RoomDetailActivity : AppCompatActivity() {
@@ -34,6 +35,12 @@ class RoomDetailActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
+
+        // 네이버 지도 클라이언트 ID 가져오기
+        val naverClientId = getString(R.string.NAVER_CLIENT_ID)
+
+        // 네이버 지도 SDK에 클라이언트 ID 설정
+        NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient(naverClientId)
 
         // 뒤로 가기 버튼 클릭 시 최근 본 방 업데이트
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
